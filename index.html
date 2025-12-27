@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Wrapped 2025</title>
+    <link rel="icon" href="claude.png">
+    <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css" />
+    <style>
+        /* Hide icons until font loads to prevent FOUT */
+        .hgi-stroke { opacity: 0; transition: opacity 0.2s; }
+        .fonts-loaded .hgi-stroke { opacity: 1; }
+    </style>
+    <script>
+        // Detect when Hugeicons font is loaded
+        document.fonts.ready.then(() => document.body.classList.add('fonts-loaded'));
+    </script>
+    <style>
+        :root {
+            --safe-area-inset-top: 40px;
+            --safe-area-inset-bottom: 60px;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: "SF Mono", Monaco, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Gradient backgrounds */
+        .bg-gradient-upload {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .bg-gradient-intro {
+            background: linear-gradient(180deg, #F5A28F -3.85%, #D1C5FA 45.32%, #FDC580 100%);
+        }
+        .bg-gradient-stats {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        .bg-gradient-archetype {
+            background: linear-gradient(180deg, #11998e 0%, #38ef7d 100%);
+        }
+        .bg-gradient-themes {
+            background: linear-gradient(180deg, #ee0979 0%, #ff6a00 100%);
+        }
+        .bg-gradient-phrases {
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .bg-gradient-awards {
+            background: linear-gradient(180deg, #fa709a 0%, #fee140 100%);
+        }
+        .bg-gradient-thankyou {
+            background: linear-gradient(180deg, #a18cd1 0%, #fbc2eb 100%);
+        }
+        .bg-gradient-poem {
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+        }
+        .bg-gradient-predictions {
+            background: linear-gradient(180deg, #0ea5e9 0%, #6366f1 100%);
+        }
+        .bg-gradient-heatmap {
+            background: linear-gradient(180deg, #1a1a2e 0%, #2d1f1a 50%, #1a1a1a 100%);
+        }
+
+        /* Heatmap */
+        .heatmap-container {
+            width: 100%;
+            max-width: 900px;
+            overflow-x: auto;
+            padding: 1rem;
+            margin: 0 auto;
+        }
+        .heatmap-wrapper {
+            display: flex;
+            gap: 8px;
+            width: fit-content;
+            margin: 0 auto;
+        }
+        .heatmap-days {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-top: 20px;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        .heatmap-days span {
+            height: 11px;
+            line-height: 11px;
+        }
+        .heatmap-main {
+            flex: 1;
+        }
+        .heatmap-months {
+            display: flex;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-bottom: 4px;
+            padding-left: 2px;
+            position: relative;
+            height: 16px;
+        }
+        .heatmap-month {
+            position: absolute;
+            white-space: nowrap;
+        }
+        .heatmap-grid {
+            display: grid;
+            grid-template-rows: repeat(7, 11px);
+            grid-auto-flow: column;
+            grid-auto-columns: 11px;
+            gap: 2px;
+        }
+        .heatmap-cell {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            background: #2d2d2d;
+        }
+        .heatmap-cell[data-level="1"] { background: #ffedd5; }
+        .heatmap-cell[data-level="2"] { background: #fdba74; }
+        .heatmap-cell[data-level="3"] { background: #f97316; }
+        .heatmap-cell[data-level="4"] { background: #c2410c; }
+        .heatmap-cell:hover {
+            outline: 1px solid rgba(255,255,255,0.5);
+            outline-offset: 1px;
+        }
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 4px;
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        .heatmap-legend-cell {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+        }
+        .heatmap-tooltip {
+            position: fixed;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Screen container */
+        .screens-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--safe-area-inset-top) 20px var(--safe-area-inset-bottom);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .screen.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .screen.prev {
+            transform: translateX(-100%);
+        }
+
+        /* Typography */
+        .title {
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        .overline {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            width: 100%;
+            max-width: 400px;
+            padding: 3rem 2rem;
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .upload-zone.dragover {
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .privacy-note {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .privacy-note strong {
+            color: #4ade80;
+        }
+
+        /* Processing */
+        .processing {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 1.5rem auto 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4ade80, #22d3ee);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.75rem;
+            text-align: center;
+        }
+
+        /* Stat coins */
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: 400px;
+            margin-top: 2rem;
+        }
+
+        .stat-coin {
+            width: 100px;
+            height: 130px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            color: #333;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: rotate(var(--rotation, 0deg));
+            transition: transform 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .stat-coin:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-label-top {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stat-label-bottom {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotation, 0deg)); }
+            50% { transform: translateY(-8px) rotate(var(--rotation, 0deg)); }
+        }
+
+        /* Archetype */
+        .archetype-card {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 300px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .archetype-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .archetype-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Themes */
+        .themes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .theme-item {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .theme-content p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Phrases */
+        .phrases-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 2rem;
+            max-width: 400px;
+        }
+
+        .phrase-tag {
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phrase-count {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+        }
+
+        /* Awards */
+        .award-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 300px;
+            color: #333;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .award-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .award-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .award-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Navigation */
+        .nav-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0.7;
+            z-index: 100;
+            display: none;
+        }
+
+        .nav-hint.visible {
+            display: block;
+        }
+
+        .nav-dots {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .nav-dots.visible {
+            display: flex;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        /* Claude logo */
+        .claude-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+        .claude-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Intro animation */
+        .intro-year {
+            font-size: 5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Button */
+        .btn {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Poem Card */
+        .poem-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            max-width: 340px;
+            text-align: center;
+        }
+        .poem-content {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            font-style: italic;
+            white-space: pre-line;
+        }
+        .poem-loading {
+            text-align: center;
+        }
+        .poem-loading p {
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Predictions */
+        .predictions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            max-width: 350px;
+            width: 100%;
+        }
+        .prediction-item {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInPrediction 0.5s ease forwards;
+        }
+        .prediction-number {
+            font-size: 1.5rem;
+            min-width: 32px;
+        }
+        .prediction-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        @keyframes slideInPrediction {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .predictions-loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .predictions-loading p {
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+
+        .hidden { display: none !important; }
+
+        input[type="file"] { display: none; }
+
+        /* Model Loading Progress */
+        .model-loading {
+            width: 100%;
+            max-width: 350px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .model-loading-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.9;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #D97757 0%, #f97316 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .model-loading-size {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            font-family: var(--font-mono);
+        }
+        .ai-info-note {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.75rem;
+            line-height: 1.4;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.3);
+        }
+        .divider span {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* Holographic Card */
+        .bg-gradient-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        }
+        .holo-card-container {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            overflow: visible;
+        }
+        #screen-card {
+            overflow: visible !important;
+        }
+        .holo-card {
+            --pointer-x: 50%;
+            --pointer-y: 50%;
+            --pointer-from-center: 0;
+            --rotate-x: 0deg;
+            --rotate-y: 0deg;
+            --card-scale: 1;
+            --archetype-color: #d97706;
+            --archetype-color-rgb: 217,119,6;
+            position: relative;
+            width: 300px;
+            height: 420px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #1a1a2e 0%, #2d2d44 100%);
+            box-shadow:
+                0 0 0 4px var(--archetype-color),
+                0 20px 40px rgba(0,0,0,0.5),
+                0 0 60px rgba(var(--archetype-color-rgb), 0.3);
+            transform-style: preserve-3d;
+            transform:
+                perspective(1000px)
+                rotateX(var(--rotate-x))
+                rotateY(var(--rotate-y))
+                scale3d(var(--card-scale), var(--card-scale), 1);
+            overflow: hidden;
+            will-change: transform;
+        }
+        /* Shine layer - follows pointer */
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            background: radial-gradient(
+                farthest-corner circle at var(--pointer-x) var(--pointer-y),
+                rgba(255,255,255,0.8) 10%,
+                rgba(255,255,255,0.4) 20%,
+                rgba(255,220,180,0.2) 30%,
+                transparent 60%
+            );
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 10;
+            opacity: calc(0.4 + var(--pointer-from-center) * 0.6);
+        }
+        /* Rainbow holo layer - moves opposite to pointer */
+        .holo-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            background: linear-gradient(
+                115deg,
+                transparent 30%,
+                rgba(255,200,100,0.4) 40%,
+                rgba(180,120,255,0.4) 47%,
+                rgba(100,200,255,0.4) 53%,
+                rgba(255,150,180,0.4) 60%,
+                transparent 70%
+            );
+            background-size: 130% 130%;
+            background-position:
+                calc((100% - var(--pointer-x)) * 0.8)
+                calc((100% - var(--pointer-y)) * 0.8);
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+            z-index: 11;
+            opacity: calc(0.4 + var(--pointer-from-center) * 0.3);
+        }
+        .holo-card-inner {
+            position: relative;
+            z-index: 5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+            color: white;
+        }
+        .card-header {
+            text-align: center;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--archetype-color);
+            margin-bottom: 1rem;
+        }
+        .card-header h3 {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            opacity: 0.8;
+            margin-bottom: 0.25rem;
+        }
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .card-archetype {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .card-archetype-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 10px var(--archetype-color));
+            color: var(--archetype-color);
+        }
+        .card-archetype-icon i {
+            display: block;
+        }
+        .card-archetype-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--archetype-color);
+            text-shadow: 0 0 20px var(--archetype-color);
+            letter-spacing: 2px;
+        }
+        .card-archetype-desc {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        .card-stats {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 0.75rem 0;
+        }
+        .card-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+        .card-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .card-stat-icon {
+            opacity: 0.8;
+            font-size: 1rem;
+            color: var(--archetype-color);
+        }
+        .card-award i {
+            color: var(--archetype-color);
+            margin-right: 0.25rem;
+        }
+        .card-quest {
+            text-align: center;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+        .card-quest strong {
+            color: var(--archetype-color);
+        }
+        .card-footer {
+            text-align: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .card-award {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .card-brand {
+            font-size: 0.65rem;
+            opacity: 0.5;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        .card-actions button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-share {
+            background: var(--archetype-color);
+            color: white;
+            border: none;
+        }
+        .btn-share:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(var(--archetype-color-rgb, 217,119,6), 0.4);
+        }
+        .btn-restart {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .btn-restart:hover {
+            border-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="screens-container">
+        <!-- Screen 0: Upload -->
+        <div class="screen bg-gradient-upload active" data-screen="upload" id="screen-upload">
+            <div class="claude-logo"><img src="claude.png" alt="Claude"></div>
+            <h1 class="title">Claude Wrapped 2025</h1>
+            <p class="subtitle">See your year in conversation</p>
+
+            <div class="divider"><span>upload your data</span></div>
+
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-icon"><i class="hgi-stroke hgi-folder-02"></i></div>
+                <div class="upload-text">Drop your conversations.json here</div>
+                <div class="upload-hint">or click to browse</div>
+            </div>
+            <input type="file" id="file-input" accept=".json">
+
+            <div class="privacy-note">
+                <strong>100% Private</strong> - Your data never leaves your browser. All processing happens locally.
+            </div>
+        </div>
+
+        <!-- Screen 0.5: Processing -->
+        <div class="screen bg-gradient-upload" data-screen="processing" id="screen-processing">
+            <div class="processing">
+                <div class="spinner"></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">Loading file...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 1: Intro -->
+        <div class="screen bg-gradient-intro" data-screen="intro" id="screen-intro">
+            <div class="claude-logo"><img src="claude.png" alt="Claude"></div>
+            <div class="intro-year">2025</div>
+            <h1 class="title">Your Year with Claude</h1>
+            <p class="subtitle">Let's look back at everything we explored together</p>
+            <button class="btn" onclick="nextScreen()">Get Started</button>
+        </div>
+
+        <!-- Screen 2: Stats -->
+        <div class="screen bg-gradient-stats" data-screen="stats" id="screen-stats">
+            <h1 class="title">Your 2025 Chat Stats</h1>
+            <div class="stats-grid" id="stats-grid"></div>
+        </div>
+
+        <!-- Screen 2.5: Heatmap -->
+        <div class="screen bg-gradient-heatmap" data-screen="heatmap" id="screen-heatmap">
+            <h1 class="title">Your Year in Chats</h1>
+            <div class="heatmap-container">
+                <div class="heatmap-wrapper">
+                    <div class="heatmap-days">
+                        <span></span>
+                        <span>Mon</span>
+                        <span></span>
+                        <span>Wed</span>
+                        <span></span>
+                        <span>Fri</span>
+                        <span></span>
+                    </div>
+                    <div class="heatmap-main">
+                        <div class="heatmap-months" id="heatmap-months"></div>
+                        <div class="heatmap-grid" id="heatmap-grid"></div>
+                    </div>
+                </div>
+                <div class="heatmap-legend">
+                    <span>Less</span>
+                    <div class="heatmap-legend-cell" style="background: #2d2d2d;"></div>
+                    <div class="heatmap-legend-cell" style="background: #ffedd5;"></div>
+                    <div class="heatmap-legend-cell" style="background: #fdba74;"></div>
+                    <div class="heatmap-legend-cell" style="background: #f97316;"></div>
+                    <div class="heatmap-legend-cell" style="background: #c2410c;"></div>
+                    <span>More</span>
+                </div>
+            </div>
+            <div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+        </div>
+
+        <!-- Screen 3: Archetype -->
+        <div class="screen bg-gradient-archetype" data-screen="archetype" id="screen-archetype">
+            <p class="overline">Your Archetype</p>
+            <div class="archetype-card">
+                <div class="archetype-name" id="archetype-name">Learner</div>
+                <p class="archetype-desc" id="archetype-desc">You ask the big questions and dig deep into topics</p>
+            </div>
+        </div>
+
+        <!-- Screen 4: Themes -->
+        <div class="screen bg-gradient-themes" data-screen="themes" id="screen-themes">
+            <h1 class="title">Three Big Themes of 2025</h1>
+            <div class="themes-list" id="themes-list"></div>
+        </div>
+
+        <!-- Screen 5: Phrases -->
+        <div class="screen bg-gradient-phrases" data-screen="phrases" id="screen-phrases">
+            <h1 class="title">Your Most Iconic Phrases</h1>
+            <div class="phrases-list" id="phrases-list"></div>
+        </div>
+
+        <!-- Screen 6: Awards -->
+        <div class="screen bg-gradient-awards" data-screen="awards" id="screen-awards">
+            <p class="overline">If 2025 gave out awards, you'd get:</p>
+            <div class="award-card">
+                <div class="award-icon" id="award-icon"><i class="hgi-stroke hgi-trophy"></i></div>
+                <div class="award-name" id="award-name">The Curious Mind</div>
+                <p class="award-desc" id="award-desc">For asking thoughtful questions and exploring new ideas</p>
+            </div>
+        </div>
+
+        <!-- Screen 7: Poem -->
+        <div class="screen bg-gradient-poem" data-screen="poem" id="screen-poem">
+            <p class="overline">Your Year in Verse</p>
+            <div class="poem-card">
+                <div class="poem-loading" id="poem-loading">
+                    <div class="spinner"></div>
+                    <p id="poem-status">Loading AI model...</p>
+                    <div class="progress-bar" style="margin-top:1rem;max-width:200px;">
+                        <div class="progress-fill" id="poem-progress" style="width:0%"></div>
+                    </div>
+                    <p class="model-loading-size" id="poem-size" style="margin-top:0.5rem;">0 / 150 MB</p>
+                </div>
+                <div class="poem-content hidden" id="poem-content"></div>
+            </div>
+        </div>
+
+        <!-- Screen 8: Predictions -->
+        <div class="screen bg-gradient-predictions" data-screen="predictions" id="screen-predictions">
+            <h1 class="title">Your 2026 Predictions</h1>
+            <div class="predictions-list" id="predictions-list">
+                <div class="predictions-loading" id="predictions-loading">
+                    <div class="spinner"></div>
+                    <p>Generating predictions...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 9: Shareable Card -->
+        <div class="screen bg-gradient-card" data-screen="card" id="screen-card">
+            <div class="holo-card-container">
+                <div class="holo-card" id="holo-card">
+                    <div class="holo-card-inner">
+                        <div class="card-header">
+                            <h3>CLAUDE WRAPPED</h3>
+                            <h2>2025</h2>
+                        </div>
+                        <div class="card-archetype">
+                            <div class="card-archetype-icon" id="card-archetype-icon"><i class="hgi-stroke hgi-book-02"></i></div>
+                            <div class="card-archetype-name" id="card-archetype-name">SAGE</div>
+                            <div class="card-archetype-desc" id="card-archetype-desc">Seeker of Knowledge</div>
+                        </div>
+                        <div class="card-stats">
+                            <div class="card-stats-grid">
+                                <div class="card-stat">
+                                    <i class="hgi-stroke hgi-message-02 card-stat-icon"></i>
+                                    <span id="card-chats">0 Chats</span>
+                                </div>
+                                <div class="card-stat">
+                                    <i class="hgi-stroke hgi-calendar-03 card-stat-icon"></i>
+                                    <span id="card-days">0 Days</span>
+                                </div>
+                                <div class="card-stat">
+                                    <i class="hgi-stroke hgi-mail-02 card-stat-icon"></i>
+                                    <span id="card-messages">0 Messages</span>
+                                </div>
+                                <div class="card-stat">
+                                    <i class="hgi-stroke hgi-target-02 card-stat-icon"></i>
+                                    <span id="card-theme">—</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-award"><i class="hgi-stroke hgi-trophy" id="card-award-icon"></i> <span id="card-award">The Loremaster</span></div>
+                            <div class="card-brand">claude.ai</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-share" onclick="shareCard()">Share Card</button>
+                <button class="btn-restart" onclick="restartExperience()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-dots" id="nav-dots"></div>
+    <div class="nav-hint" id="nav-hint">Tap or swipe to continue</div>
+
+    <script>
+    // ============================================
+    // DATA EXTRACTION (ported from Python)
+    // ============================================
+
+    const STOPWORDS = new Set([
+        "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
+        "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she",
+        "her", "hers", "herself", "it", "its", "itself", "they", "them", "their",
+        "theirs", "themselves", "what", "which", "who", "whom", "this", "that",
+        "these", "those", "am", "is", "are", "was", "were", "be", "been", "being",
+        "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an",
+        "the", "and", "but", "if", "or", "because", "as", "until", "while", "of",
+        "at", "by", "for", "with", "about", "against", "between", "into", "through",
+        "during", "before", "after", "above", "below", "to", "from", "up", "down",
+        "in", "out", "on", "off", "over", "under", "again", "further", "then",
+        "once", "here", "there", "when", "where", "why", "how", "all", "each",
+        "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only",
+        "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just",
+        "don", "should", "now", "d", "ll", "m", "o", "re", "ve", "y", "ain", "aren",
+        "couldn", "didn", "doesn", "hadn", "hasn", "haven", "isn", "ma", "mightn",
+        "mustn", "needn", "shan", "shouldn", "wasn", "weren", "won", "wouldn",
+        "please", "want", "need", "like", "would", "could", "make", "get", "know",
+        "think", "see", "go", "come", "take", "use", "find", "give", "tell", "ask",
+        "work", "seem", "feel", "try", "leave", "call", "keep", "let", "begin",
+        "show", "hear", "play", "run", "move", "live", "believe", "bring", "happen",
+        "write", "provide", "sit", "stand", "lose", "pay", "meet", "include",
+        "continue", "set", "learn", "change", "lead", "understand", "watch",
+        "follow", "stop", "create", "speak", "read", "allow", "add", "spend",
+        "grow", "open", "walk", "win", "offer", "remember", "love", "consider",
+        "appear", "buy", "wait", "serve", "die", "send", "expect", "build", "stay",
+        "fall", "cut", "reach", "kill", "remain", "suggest", "raise", "pass",
+        "sell", "require", "report", "decide", "pull", "ok", "okay", "hi", "hello",
+        "hey", "thanks", "thank", "yes", "yeah", "yep", "no", "nope", "sure",
+    ]);
+
+    const THEME_KEYWORDS = {
+        coding: ["code", "python", "javascript", "api", "function", "programming",
+                 "debug", "error", "bug", "script", "developer", "coding", "software",
+                 "app", "application", "react", "html", "css", "database", "sql"],
+        writing: ["write", "story", "essay", "article", "blog", "creative", "poem",
+                  "novel", "character", "plot", "draft", "edit", "grammar", "style",
+                  "content", "copywriting", "text", "paragraph", "sentence"],
+        learning: ["learn", "explain", "understand", "study", "course", "teach",
+                   "education", "tutorial", "concept", "theory", "practice", "skill",
+                   "knowledge", "research", "science", "math", "history"],
+        productivity: ["task", "project", "plan", "schedule", "organize", "todo",
+                       "workflow", "manage", "time", "productivity", "goal", "priority",
+                       "deadline", "meeting", "calendar", "reminder"],
+        business: ["business", "startup", "marketing", "sales", "customer", "product",
+                   "strategy", "revenue", "growth", "market", "company", "brand",
+                   "pitch", "investor", "client", "email", "proposal"],
+        creative: ["design", "art", "creative", "image", "visual", "logo", "color",
+                   "layout", "illustration", "graphic", "aesthetic", "style", "ui",
+                   "ux", "interface", "mockup"],
+        personal: ["life", "relationship", "advice", "decision", "feeling", "personal",
+                   "health", "wellness", "fitness", "diet", "sleep", "stress", "mental",
+                   "emotional", "family", "friend"],
+        analysis: ["analyze", "data", "report", "insight", "metric", "trend",
+                   "statistic", "chart", "graph", "compare", "evaluate", "assess",
+                   "review", "summary", "breakdown"],
+    };
+
+    const ARCHETYPE_PATTERNS = {
+        Sage: [/\bexplain\b/gi, /\bhow does\b/gi, /\bwhat is\b/gi, /\bwhy\b/gi,
+               /\bteach\b/gi, /\bunderstand\b/gi, /\blearn\b/gi, /\?/g],
+        Paladin: [/\bdo\b/gi, /\bbuild\b/gi, /\bcreate\b/gi, /\bship\b/gi,
+                  /\bdeploy\b/gi, /\bfinish\b/gi, /\bcomplete\b/gi, /\bexecute\b/gi],
+        Tactician: [/\bplan\b/gi, /\bschedule\b/gi, /\broadmap\b/gi, /\btimeline\b/gi,
+                    /\bstrategy\b/gi, /\bgoal\b/gi, /\bobjective\b/gi, /\bstep\b/gi],
+        Ranger: [/\bexplore\b/gi, /\bidea\b/gi, /\bwhat if\b/gi, /\bpossible\b/gi,
+                 /\balternative\b/gi, /\boption\b/gi, /\btry\b/gi, /\bexperiment\b/gi],
+        Artificer: [/\bhow to\b/gi, /\bstep.?by.?step\b/gi, /\btemplate\b/gi,
+                    /\bexample\b/gi, /\bquick\b/gi, /\beasy\b/gi, /\bsimple\b/gi],
+        Monk: [/\bspecific\b/gi, /\bdetail\b/gi, /\btechnical\b/gi, /\bexpert\b/gi,
+               /\badvanced\b/gi, /\bprofessional\b/gi, /\bin.?depth\b/gi],
+        Oracle: [/\btheory\b/gi, /\bphilosophy\b/gi, /\bframework\b/gi,
+                 /\bhypothesis\b/gi, /\babstract\b/gi, /\bconcept\b/gi, /\bprinciple\b/gi],
+    };
+
+    function getMessageText(message) {
+        let texts = [];
+        if (message.text) texts.push(message.text);
+        for (const content of (message.content || [])) {
+            if (content.type === 'text' && content.text && !texts.includes(content.text)) {
+                texts.push(content.text);
+            }
+        }
+        return texts.join(' ');
+    }
+
+    function countEmdashes(text) {
+        return (text.match(/\u2014/g) || []).length + (text.match(/\u2013/g) || []).length;
+    }
+
+    function tokenize(text) {
+        text = text.toLowerCase();
+        text = text.replace(/https?:\/\/\S+/g, '');
+        text = text.replace(/[^\w\s']/g, ' ');
+        const tokens = text.split(/\s+/).filter(t => t.length > 2 && !STOPWORDS.has(t));
+        return tokens;
+    }
+
+    async function extractData(conversations, onProgress) {
+        const stats = {
+            total_chats: 0,
+            messages_sent: 0,
+            messages_total: 0,
+            chars_human: 0,
+            chars_assistant: 0,
+            tool_use_count: 0,
+            image_count: 0,
+            emdashes: 0,
+            first_message: null,
+            last_message: null,
+            days_active: 0,
+            chattiest_day: null,
+            chattiest_day_count: 0,
+        };
+
+        const dailyStats = {};
+        const wordCounts = {};
+        const themeScores = {};
+        const archetypeScores = {};
+        const allHumanTextParts = [];
+        const allTimestamps = [];
+
+        const total = conversations.length;
+        let processed = 0;
+
+        for (const conv of conversations) {
+            const messages = conv.chat_messages || [];
+            if (messages.length === 0) continue;
+            stats.total_chats++;
+
+            for (const msg of messages) {
+                stats.messages_total++;
+                const sender = msg.sender || '';
+                const text = getMessageText(msg);
+
+                if (sender === 'human') {
+                    stats.messages_sent++;
+                    stats.chars_human += text.length;
+                    allHumanTextParts.push(text);
+
+                    // Word counting
+                    for (const token of tokenize(text)) {
+                        wordCounts[token] = (wordCounts[token] || 0) + 1;
+                    }
+                } else {
+                    stats.chars_assistant += text.length;
+                }
+
+                stats.emdashes += countEmdashes(text);
+
+                // Tool use
+                for (const content of (msg.content || [])) {
+                    if (content.type === 'tool_use') {
+                        stats.tool_use_count++;
+                    }
+                }
+
+                // Timestamps
+                if (msg.created_at) {
+                    const ts = new Date(msg.created_at);
+                    allTimestamps.push(ts);
+                    const dateStr = ts.toISOString().split('T')[0];
+
+                    if (!dailyStats[dateStr]) {
+                        dailyStats[dateStr] = { messages_human: 0, messages_total: 0 };
+                    }
+                    dailyStats[dateStr].messages_total++;
+                    if (sender === 'human') {
+                        dailyStats[dateStr].messages_human++;
+                    }
+                }
+            }
+
+            processed++;
+            if (processed % 50 === 0 && onProgress) {
+                onProgress((processed / total) * 100, `Processing ${processed.toLocaleString()} of ${total.toLocaleString()} chats...`);
+                await new Promise(r => setTimeout(r, 0));
+            }
+        }
+
+        // Join all text parts at the end (more efficient than string concatenation)
+        const allHumanText = allHumanTextParts.join(' ');
+
+        // Date range
+        if (allTimestamps.length > 0) {
+            allTimestamps.sort((a, b) => a - b);
+            stats.first_message = allTimestamps[0].toISOString().split('T')[0];
+            stats.last_message = allTimestamps[allTimestamps.length - 1].toISOString().split('T')[0];
+        }
+
+        // Days active & chattiest day
+        stats.days_active = Object.keys(dailyStats).length;
+        let maxDay = null, maxCount = 0;
+        for (const [day, data] of Object.entries(dailyStats)) {
+            if (data.messages_human > maxCount) {
+                maxCount = data.messages_human;
+                maxDay = day;
+            }
+        }
+        stats.chattiest_day = maxDay;
+        stats.chattiest_day_count = maxCount;
+
+        // Theme detection
+        const lowerHumanText = allHumanText.toLowerCase();
+        for (const [theme, keywords] of Object.entries(THEME_KEYWORDS)) {
+            themeScores[theme] = 0;
+            for (const kw of keywords) {
+                const regex = new RegExp('\\b' + kw + '\\b', 'gi');
+                const matches = lowerHumanText.match(regex);
+                if (matches) themeScores[theme] += matches.length;
+            }
+        }
+
+        const sortedThemes = Object.entries(themeScores)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+        const totalThemeScore = sortedThemes.reduce((sum, [, s]) => sum + s, 0);
+
+        const themes = sortedThemes.map(([theme, score]) => ({
+            title: theme.charAt(0).toUpperCase() + theme.slice(1),
+            score,
+            percentage: totalThemeScore > 0 ? Math.round(score / totalThemeScore * 100) : 0,
+            description: `Discussed ${theme}-related topics`
+        }));
+
+        // Archetype classification
+        for (const [archetype, patterns] of Object.entries(ARCHETYPE_PATTERNS)) {
+            archetypeScores[archetype] = 0;
+            for (const pattern of patterns) {
+                const matches = allHumanText.match(pattern);
+                if (matches) archetypeScores[archetype] += matches.length;
+            }
+        }
+
+        const sortedArchetypes = Object.entries(archetypeScores).sort((a, b) => b[1] - a[1]);
+        const totalArchetypeScore = sortedArchetypes.reduce((sum, [, s]) => sum + s, 0);
+        const [topArchetype, topScore] = sortedArchetypes[0] || ['Ranger', 0];
+
+        const archetype = {
+            name: topArchetype,
+            confidence: totalArchetypeScore > 0 ? Math.round(topScore / totalArchetypeScore * 100) / 100 : 0.5,
+            scores: Object.fromEntries(sortedArchetypes)
+        };
+
+        // Top phrases
+        const sortedWords = Object.entries(wordCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 20)
+            .filter(([, count]) => count >= 2);
+
+        const phrases = {
+            unigrams: sortedWords.map(([phrase, count]) => ({ phrase, count }))
+        };
+
+        return { stats, themes, archetype, phrases, dailyStats };
+    }
+
+    // ============================================
+    // UI & NAVIGATION
+    // ============================================
+
+    let wrappedData = null;
+    let currentScreen = 0;
+    let experienceStarted = false;
+
+    const screenOrder = ['upload', 'processing', 'intro', 'stats', 'heatmap', 'archetype', 'themes', 'phrases', 'awards', 'poem', 'predictions', 'card'];
+    const navigableScreens = ['intro', 'stats', 'heatmap', 'archetype', 'themes', 'phrases', 'awards', 'poem', 'predictions', 'card'];
+    let aiContentGenerated = false;
+
+    function showScreen(screenName) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active', 'prev');
+        });
+        const screen = document.getElementById('screen-' + screenName);
+        if (screen) screen.classList.add('active');
+
+        // Update nav visibility
+        const isNavigable = navigableScreens.includes(screenName);
+        document.getElementById('nav-dots').classList.toggle('visible', isNavigable);
+        document.getElementById('nav-hint').classList.toggle('visible', isNavigable && screenName !== 'intro');
+
+        if (isNavigable) {
+            currentScreen = navigableScreens.indexOf(screenName);
+            updateDots();
+        }
+    }
+
+    function nextScreen() {
+        if (currentScreen < navigableScreens.length - 1) {
+            currentScreen++;
+            showScreen(navigableScreens[currentScreen]);
+        }
+    }
+
+    function prevScreen() {
+        if (currentScreen > 0) {
+            currentScreen--;
+            showScreen(navigableScreens[currentScreen]);
+        }
+    }
+
+    function goToScreen(index) {
+        currentScreen = index;
+        showScreen(navigableScreens[currentScreen]);
+    }
+
+    function createDots() {
+        const container = document.getElementById('nav-dots');
+        container.innerHTML = '';
+        for (let i = 0; i < navigableScreens.length; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            dot.onclick = () => goToScreen(i);
+            container.appendChild(dot);
+        }
+    }
+
+    function updateDots() {
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentScreen);
+        });
+    }
+
+    function restartExperience() {
+        experienceStarted = false;
+        showScreen('upload');
+    }
+
+    // ============================================
+    // HOLOGRAPHIC CARD
+    // ============================================
+
+    const archetypeColors = {
+        'Sage': { color: '#4a90d9', rgb: '74,144,217' },
+        'Paladin': { color: '#d4af37', rgb: '212,175,55' },
+        'Tactician': { color: '#2d8f4e', rgb: '45,143,78' },
+        'Ranger': { color: '#228b22', rgb: '34,139,34' },
+        'Artificer': { color: '#b87333', rgb: '184,115,51' },
+        'Monk': { color: '#a02040', rgb: '160,32,64' },
+        'Oracle': { color: '#9932cc', rgb: '153,50,204' },
+    };
+
+    const archetypeIcons = {
+        'Sage': 'hgi-book-02',
+        'Paladin': 'hgi-sword-03',
+        'Tactician': 'hgi-chess-pawn',
+        'Ranger': 'hgi-compass',
+        'Artificer': 'hgi-wrench-01',
+        'Monk': 'hgi-yoga-03',
+        'Oracle': 'hgi-magic-wand-03',
+    };
+
+    const archetypeAwards = {
+        'Sage': 'The Loremaster',
+        'Paladin': 'The Crusader',
+        'Tactician': 'The Grandmaster',
+        'Ranger': 'The Pathfinder',
+        'Artificer': 'The Tinkerer',
+        'Monk': 'The Sensei',
+        'Oracle': 'The Seer',
+    };
+
+    function populateCard() {
+        const stats = wrappedData?.stats || {};
+        const archetype = wrappedData?.archetype?.name || 'Ranger';
+        const themes = wrappedData?.themes || [];
+
+        const colorData = archetypeColors[archetype] || archetypeColors['Ranger'];
+        const card = document.getElementById('holo-card');
+
+        card.style.setProperty('--archetype-color', colorData.color);
+        card.style.setProperty('--archetype-color-rgb', colorData.rgb);
+
+        const iconClass = archetypeIcons[archetype] || 'hgi-compass';
+        document.getElementById('card-archetype-icon').innerHTML = `<i class="hgi-stroke ${iconClass}"></i>`;
+        document.getElementById('card-archetype-name').textContent = archetype.toUpperCase();
+
+        const descriptions = {
+            'Sage': 'Seeker of Knowledge',
+            'Paladin': 'Champion of Deeds',
+            'Tactician': 'Master Strategist',
+            'Ranger': 'Explorer of Realms',
+            'Artificer': 'Crafter of Solutions',
+            'Monk': 'Disciplined Master',
+            'Oracle': 'Cosmic Visionary',
+        };
+        document.getElementById('card-archetype-desc').textContent = descriptions[archetype] || 'Adventurer';
+
+        document.getElementById('card-chats').textContent = `${stats.total_chats || 0} Chats`;
+        document.getElementById('card-days').textContent = `${stats.days_active || 0} Days`;
+        document.getElementById('card-messages').textContent = `${stats.messages_sent || 0} Msgs`;
+        document.getElementById('card-theme').textContent = themes[0]?.title || '—';
+
+        const award = archetypeAwards[archetype] || 'The Adventurer';
+        document.getElementById('card-award').textContent = award;
+
+        // Setup mouse tracking for 3D effect
+        setupCardTilt();
+    }
+
+    function setupCardTilt() {
+        const card = document.getElementById('holo-card');
+        if (!card) return;
+
+        // Spring physics state
+        let current = { x: 0, y: 0, scale: 1 };
+        let target = { x: 0, y: 0, scale: 1 };
+        const spring = { stiffness: 0.08, damping: 0.85 };
+        let animating = false;
+
+        function animate() {
+            // Spring physics interpolation
+            const dx = target.x - current.x;
+            const dy = target.y - current.y;
+            const ds = target.scale - current.scale;
+
+            current.x += dx * spring.stiffness;
+            current.y += dy * spring.stiffness;
+            current.scale += ds * spring.stiffness;
+
+            // Update CSS variables (max 10 degrees tilt to prevent clipping)
+            const rotateY = current.x * 10;
+            const rotateX = current.y * -10;
+            const pointerX = (current.x + 0.5) * 100;
+            const pointerY = (current.y + 0.5) * 100;
+            const fromCenter = Math.min(1, Math.sqrt(current.x ** 2 + current.y ** 2) * 2);
+
+            card.style.setProperty('--rotate-x', rotateX + 'deg');
+            card.style.setProperty('--rotate-y', rotateY + 'deg');
+            card.style.setProperty('--pointer-x', pointerX + '%');
+            card.style.setProperty('--pointer-y', pointerY + '%');
+            card.style.setProperty('--pointer-from-center', fromCenter);
+            card.style.setProperty('--card-scale', current.scale);
+
+            // Continue animation if not settled
+            if (Math.abs(dx) > 0.0001 || Math.abs(dy) > 0.0001 || Math.abs(ds) > 0.0001) {
+                requestAnimationFrame(animate);
+            } else {
+                animating = false;
+            }
+        }
+
+        function startAnimation() {
+            if (!animating) {
+                animating = true;
+                requestAnimationFrame(animate);
+            }
+        }
+
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            target.x = (e.clientX - rect.left) / rect.width - 0.5;
+            target.y = (e.clientY - rect.top) / rect.height - 0.5;
+            target.scale = 1.03;
+            startAnimation();
+        });
+
+        card.addEventListener('mouseleave', () => {
+            target.x = 0;
+            target.y = 0;
+            target.scale = 1;
+            startAnimation();
+        });
+
+        // Touch support for mobile
+        card.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = card.getBoundingClientRect();
+            target.x = (touch.clientX - rect.left) / rect.width - 0.5;
+            target.y = (touch.clientY - rect.top) / rect.height - 0.5;
+            target.scale = 1.02;
+            startAnimation();
+        }, { passive: false });
+
+        card.addEventListener('touchend', () => {
+            target.x = 0;
+            target.y = 0;
+            target.scale = 1;
+            startAnimation();
+        });
+    }
+
+    async function shareCard() {
+        const card = document.getElementById('holo-card');
+        if (!card) return;
+
+        // Try native share if available
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'My Claude Wrapped 2025',
+                    text: `I'm a ${wrappedData?.archetype?.name || 'Ranger'}! Check out my Claude Wrapped 2025.`,
+                    url: window.location.href
+                });
+            } catch (err) {
+                console.log('Share cancelled or failed');
+            }
+        } else {
+            // Fallback: copy text to clipboard
+            const archetype = wrappedData?.archetype?.name || 'Ranger';
+            const stats = wrappedData?.stats || {};
+            const text = `🎴 My Claude Wrapped 2025\n\n✨ I'm a ${archetype}!\n💬 ${stats.total_chats || 0} Chats\n📅 ${stats.days_active || 0} Days Active\n✉️ ${stats.messages_sent || 0} Messages\n\n#ClaudeWrapped`;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                alert('Copied to clipboard! Paste to share.');
+            } catch (err) {
+                prompt('Copy this text to share:', text);
+            }
+        }
+    }
+
+    // ============================================
+    // PROGRESS HELPERS
+    // ============================================
+
+    function updateProgress(percent, text) {
+        const fill = document.getElementById('progress-fill');
+        const label = document.getElementById('progress-text');
+        if (fill) fill.style.width = percent + '%';
+        if (label) label.textContent = text;
+    }
+
+    function yieldToUI() {
+        return new Promise(r => setTimeout(r, 0));
+    }
+
+    // ============================================
+    // FILE HANDLING
+    // ============================================
+
+    function handleFile(file) {
+        if (!file || !file.name.endsWith('.json')) {
+            alert('Please upload a .json file');
+            return;
+        }
+
+        showScreen('processing');
+        updateProgress(5, 'Reading file...');
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                updateProgress(15, 'Parsing JSON...');
+                await yieldToUI();
+
+                const conversations = JSON.parse(e.target.result);
+
+                updateProgress(25, 'Processing conversations...');
+                await yieldToUI();
+
+                wrappedData = await extractData(conversations, (percent, text) => {
+                    updateProgress(25 + percent * 0.65, text);
+                });
+
+                updateProgress(95, 'Finalizing...');
+                await yieldToUI();
+
+                populateAllScreens();
+                experienceStarted = true;
+
+                updateProgress(100, 'Done!');
+                await yieldToUI();
+
+                showScreen('intro');
+
+                // Start AI generation in background (will be ready by poem screen)
+                startAIGenerationBackground();
+            } catch (err) {
+                console.error('Error parsing JSON:', err);
+                alert('Error parsing file. Make sure it\'s a valid conversations.json export.');
+                showScreen('upload');
+            }
+        };
+        reader.onerror = () => {
+            alert('Error reading file');
+            showScreen('upload');
+        };
+        reader.readAsText(file);
+    }
+
+    // ============================================
+    // POPULATE SCREENS
+    // ============================================
+
+    function populateAllScreens() {
+        populateStats();
+        populateHeatmap();
+        populateArchetype();
+        populateThemes();
+        populatePhrases();
+        generateAward();
+        populateCard();
+    }
+
+    function populateStats() {
+        const stats = wrappedData?.stats || {};
+        const grid = document.getElementById('stats-grid');
+
+        const statItems = [
+            { top: 'Total', value: stats.total_chats || 0, bottom: 'Chats', rotation: -5 },
+            { top: 'Messages', value: stats.messages_sent || 0, bottom: 'Sent', rotation: 3 },
+            { top: 'Chattiest', value: formatDate(stats.chattiest_day), bottom: 'Day', rotation: -2 },
+            { top: 'Days', value: stats.days_active || 0, bottom: 'Active', rotation: 4 },
+            { top: 'Em-dashes', value: stats.emdashes || 0, bottom: 'Exchanged', rotation: -3 },
+            { top: 'Tool', value: stats.tool_use_count || 0, bottom: 'Uses', rotation: 2 },
+        ];
+
+        grid.innerHTML = statItems.map((stat, i) => `
+            <div class="stat-coin" style="--rotation: ${stat.rotation}deg; --delay: ${i * 0.1}s">
+                <span class="stat-label-top">${stat.top}</span>
+                <span class="stat-value">${stat.value}</span>
+                <span class="stat-label-bottom">${stat.bottom}</span>
+            </div>
+        `).join('');
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function populateHeatmap() {
+        const dailyStats = wrappedData?.dailyStats || {};
+        const grid = document.getElementById('heatmap-grid');
+        const monthsContainer = document.getElementById('heatmap-months');
+        const tooltip = document.getElementById('heatmap-tooltip');
+
+        // Use current year (2025) for the heatmap display
+        const today = new Date();
+        const year = today.getFullYear();
+
+        // Get max value for scaling
+        const values = Object.values(dailyStats).map(d => d.messages_human || 0);
+        const maxVal = Math.max(...values, 1);
+
+        // Calculate quantile thresholds
+        const nonZeroValues = values.filter(v => v > 0).sort((a, b) => a - b);
+        const getLevel = (count) => {
+            if (count === 0) return 0;
+            if (nonZeroValues.length < 4) return count > 0 ? 2 : 0;
+            const q1 = nonZeroValues[Math.floor(nonZeroValues.length * 0.25)];
+            const q2 = nonZeroValues[Math.floor(nonZeroValues.length * 0.5)];
+            const q3 = nonZeroValues[Math.floor(nonZeroValues.length * 0.75)];
+            if (count <= q1) return 1;
+            if (count <= q2) return 2;
+            if (count <= q3) return 3;
+            return 4;
+        };
+
+        // Generate all days from Jan 1 through today
+        const startDate = new Date(year, 0, 1);
+        const endDate = today; // Show through today, not Dec 31
+
+        // Pad to start on Sunday
+        const startDay = startDate.getDay();
+        const paddedStart = new Date(startDate);
+        paddedStart.setDate(paddedStart.getDate() - startDay);
+
+        // Build grid and track month positions
+        grid.innerHTML = '';
+        let currentDate = new Date(paddedStart);
+        let weekCount = 0;
+        const monthWeekStarts = {}; // Track which week each month starts
+
+        while (currentDate <= endDate || currentDate.getDay() !== 0) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const dayData = dailyStats[dateStr];
+            const count = dayData?.messages_human || 0;
+            const level = currentDate.getFullYear() === year ? getLevel(count) : 0;
+            const isCurrentYear = currentDate.getFullYear() === year;
+
+            // Track first week of each month
+            if (isCurrentYear && currentDate.getDate() === 1) {
+                const monthName = currentDate.toLocaleString('en-US', { month: 'short' });
+                monthWeekStarts[monthName] = weekCount;
+            }
+
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            cell.dataset.level = isCurrentYear ? level : 0;
+            cell.dataset.date = dateStr;
+            cell.dataset.count = count;
+
+            if (isCurrentYear) {
+                cell.addEventListener('mouseenter', (e) => {
+                    const d = new Date(dateStr);
+                    const formatted = d.toLocaleDateString('en-US', {
+                        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+                    });
+                    tooltip.textContent = `${count} message${count !== 1 ? 's' : ''} on ${formatted}`;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = e.pageX + 10 + 'px';
+                    tooltip.style.top = e.pageY - 30 + 'px';
+                });
+                cell.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+                cell.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = e.pageX + 10 + 'px';
+                    tooltip.style.top = e.pageY - 30 + 'px';
+                });
+            } else {
+                cell.style.opacity = '0.3';
+            }
+
+            grid.appendChild(cell);
+
+            if (currentDate.getDay() === 6) weekCount++;
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Build month labels positioned at correct week columns
+        // Each cell is 11px + 2px gap = 13px per week
+        const cellWidth = 13;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentMonth = today.getMonth();
+
+        monthsContainer.innerHTML = months
+            .slice(0, currentMonth + 1) // Only show months up to current month
+            .filter(m => monthWeekStarts[m] !== undefined)
+            .map(m => `<span class="heatmap-month" style="left: ${monthWeekStarts[m] * cellWidth}px">${m}</span>`)
+            .join('');
+    }
+
+    function populateArchetype() {
+        const archetype = wrappedData?.archetype || {};
+        document.getElementById('archetype-name').textContent = archetype.name || 'Ranger';
+
+        const descriptions = {
+            'Sage': 'You seek knowledge and wisdom, asking the questions others overlook',
+            'Paladin': 'You turn ideas into action, a champion of getting things done',
+            'Tactician': 'You see the battlefield clearly, planning every move ahead',
+            'Ranger': 'You wander into the unknown, discovering new possibilities',
+            'Artificer': 'You craft practical solutions with elegant efficiency',
+            'Monk': 'You pursue mastery through disciplined focus on your craft',
+            'Oracle': 'You see patterns others miss, thinking in cosmic frameworks',
+        };
+        document.getElementById('archetype-desc').textContent =
+            descriptions[archetype.name] || 'You have a unique way of engaging with ideas';
+    }
+
+    function populateThemes() {
+        const themes = wrappedData?.themes || [];
+        const list = document.getElementById('themes-list');
+
+        list.innerHTML = themes.slice(0, 3).map((theme, i) => `
+            <div class="theme-item">
+                <div class="theme-number">${i + 1}</div>
+                <div class="theme-content">
+                    <h3>${theme.title}</h3>
+                    <p>${theme.description || `${theme.percentage || 0}% of your conversations`}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function populatePhrases() {
+        const phrases = wrappedData?.phrases?.unigrams || [];
+        const list = document.getElementById('phrases-list');
+
+        list.innerHTML = phrases.slice(0, 10).map(p => `
+            <div class="phrase-tag">
+                <span>${p.phrase}</span>
+                <span class="phrase-count">${p.count}</span>
+            </div>
+        `).join('');
+    }
+
+    function generateAward() {
+        const archetype = wrappedData?.archetype?.name || 'Ranger';
+
+        const awards = {
+            'Sage': { icon: 'hgi-book-02', name: 'The Loremaster', desc: 'For seeking ancient wisdom and forbidden knowledge' },
+            'Paladin': { icon: 'hgi-sword-03', name: 'The Crusader', desc: 'For turning words into mighty deeds' },
+            'Tactician': { icon: 'hgi-chess-pawn', name: 'The Grandmaster', desc: 'For seeing ten moves ahead on the battlefield' },
+            'Ranger': { icon: 'hgi-compass', name: 'The Pathfinder', desc: 'For venturing where others fear to tread' },
+            'Artificer': { icon: 'hgi-wrench-01', name: 'The Tinkerer', desc: 'For crafting elegant solutions from raw ideas' },
+            'Monk': { icon: 'hgi-yoga-03', name: 'The Sensei', desc: 'For mastering your craft through discipline' },
+            'Oracle': { icon: 'hgi-magic-wand-03', name: 'The Seer', desc: 'For perceiving the patterns of the cosmos' },
+        };
+
+        const award = awards[archetype] || awards['Ranger'];
+        document.getElementById('award-icon').innerHTML = `<i class="hgi-stroke ${award.icon}"></i>`;
+        document.getElementById('award-name').textContent = award.name;
+        document.getElementById('award-desc').textContent = award.desc;
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+        createDots();
+
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+
+        uploadZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+
+        uploadZone.ondragover = (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        };
+        uploadZone.ondragleave = () => uploadZone.classList.remove('dragover');
+        uploadZone.ondrop = (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        };
+
+        // Touch navigation
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            if (!experienceStarted) return;
+            touchStartX = e.touches[0].clientX;
+        });
+        document.addEventListener('touchend', (e) => {
+            if (!experienceStarted) return;
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextScreen();
+                else prevScreen();
+            }
+        });
+
+        // Click navigation
+        document.addEventListener('click', (e) => {
+            if (!experienceStarted) return;
+            if (e.target.tagName === 'BUTTON' || e.target.closest('.upload-zone')) return;
+
+            const x = e.clientX;
+            if (x > window.innerWidth / 2) nextScreen();
+            else prevScreen();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!experienceStarted) return;
+            if (e.key === 'ArrowRight' || e.key === ' ') nextScreen();
+            if (e.key === 'ArrowLeft') prevScreen();
+        });
+    });
+
+    // ============================================
+    // AI GENERATION (Local LLM - Background)
+    // ============================================
+
+    let aiGenerating = false;
+
+    async function startAIGenerationBackground() {
+        if (aiGenerating || aiContentGenerated) return;
+        aiGenerating = true;
+
+        // Check browser support
+        const support = LocalAI.checkBrowserSupport();
+        if (!support.supported) {
+            console.log('Browser does not support local AI, using fallback');
+            useFallbackContent();
+            return;
+        }
+
+        try {
+            // Progress callback updates the poem screen loading UI
+            const onProgress = (progress) => {
+                const fill = document.getElementById('poem-progress');
+                const size = document.getElementById('poem-size');
+                const status = document.getElementById('poem-status');
+
+                if (fill) fill.style.width = `${progress.percent}%`;
+                if (size) size.textContent = `${progress.loaded} / ${progress.total} MB`;
+                if (status && progress.status === 'ready') {
+                    status.textContent = 'Composing your poem...';
+                }
+            };
+
+            // Generate poem first (shows progress), then predictions
+            const poem = await LocalAI.generatePoem(wrappedData, onProgress);
+
+            // Update poem UI immediately
+            document.getElementById('poem-loading').classList.add('hidden');
+            document.getElementById('poem-content').textContent = poem;
+            document.getElementById('poem-content').classList.remove('hidden');
+            wrappedData.poem = poem;
+
+            // Generate predictions
+            const predictions = await LocalAI.generatePredictions(wrappedData);
+            wrappedData.predictions = predictions;
+            renderPredictions(predictions);
+
+            aiContentGenerated = true;
+        } catch (err) {
+            console.error('AI generation failed:', err);
+            useFallbackContent();
+        } finally {
+            aiGenerating = false;
+        }
+    }
+
+    function useFallbackContent() {
+        const poem = LocalAI.getFallbackPoem(wrappedData);
+        const predictions = LocalAI.getFallbackPredictions(wrappedData);
+
+        wrappedData.poem = poem;
+        wrappedData.predictions = predictions;
+        aiContentGenerated = true;
+
+        document.getElementById('poem-loading').classList.add('hidden');
+        document.getElementById('poem-content').textContent = poem;
+        document.getElementById('poem-content').classList.remove('hidden');
+
+        renderPredictions(predictions);
+    }
+
+    function renderPredictions(predictions) {
+        const predictionIcons = ['hgi-magic-wand-03', 'hgi-star', 'hgi-sparkles', 'hgi-sun-03'];
+        const list = document.getElementById('predictions-list');
+
+        // Remove loading indicator
+        const loading = document.getElementById('predictions-loading');
+        if (loading) loading.remove();
+
+        list.innerHTML = predictions.map((pred, i) => `
+            <div class="prediction-item" style="animation-delay: ${i * 0.15}s">
+                <span class="prediction-number"><i class="hgi-stroke ${predictionIcons[i] || 'hgi-star'}"></i></span>
+                <span class="prediction-text">${pred}</span>
+            </div>
+        `).join('');
+    }
+    </script>
+
+    <script type="module" src="ai.js"></script>
+</body>
+</html>
