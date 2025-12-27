@@ -1277,9 +1277,16 @@
         for (const conv of conversations) {
             const messages = conv.chat_messages || [];
             if (messages.length === 0) continue;
-            stats.total_chats++;
 
+            let hasMessages2025 = false;
             for (const msg of messages) {
+                // Only include 2025 data
+                if (msg.created_at) {
+                    const msgYear = new Date(msg.created_at).getFullYear();
+                    if (msgYear !== 2025) continue;
+                }
+
+                hasMessages2025 = true;
                 stats.messages_total++;
                 const sender = msg.sender || '';
                 const text = getMessageText(msg);
@@ -1320,6 +1327,11 @@
                         dailyStats[dateStr].messages_human++;
                     }
                 }
+            }
+
+            // Only count chat if it had 2025 messages
+            if (hasMessages2025) {
+                stats.total_chats++;
             }
 
             processed++;
